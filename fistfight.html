@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang"en">
+
+   <meta charset="UTF-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <title>Boxing Battle</title>
+   <style>
+       body {
+           background-color: #fff;
+           font-family: 'Courier New', monospace;
+       }
+       
+       .battle-screen {
+           width: 800px;
+           height: 600px;
+           margin: 0 auto;
+           border: 4px solid #000;
+           position: relative;
+           background-color: #f0f0f0;
+       }
+        .fighter {
+           width: 200px;
+           height: 200px;
+           position: absolute;
+       }
+        #player {
+           bottom: 50px;
+           left: 50px;
+       }
+        #opponent {
+           top: 50px;
+           right: 50px;
+       }
+        .stats-box {
+           border: 4px solid #000;
+           background-color: #fff;
+           padding: 10px;
+           position: absolute;
+           width: 200px;
+       }
+        #player-stats {
+           bottom: 250px;
+           right: 50px;
+       }
+        #opponent-stats {
+           top: 50px;
+           left: 50px;
+       }
+        .menu-box {
+           position: absolute;
+           bottom: 0;
+           width: 100%;
+           height: 150px;
+           border-top: 4px solid #000;
+           background-color: #fff;
+           display: grid;
+           grid-template-columns: 1fr 1fr;
+           gap: 10px;
+           padding: 20px;
+           box-sizing: border-box;
+       }
+        .menu-item {
+           background-color: #fff;
+           border: 2px solid #000;
+           padding: 10px;
+           text-align: center;
+           cursor: pointer;
+           font-size: 20px;
+       }
+        .menu-item:hover {
+           background-color: #e0e0e0;
+       }
+        .hp-bar {
+           width: 100%;
+           height: 20px;
+           background-color: #ccc;
+           margin-top: 5px;
+       }
+        .hp-remaining {
+           height: 100%;
+           background-color: #2ecc71;
+           width: 100%;
+           transition: width 0.5s;
+       }
+   </style>
+
+   <div class="battle-screen">
+       <div id="opponent" class="fighter">
+           👊 Opponent
+       </div>
+       <div id="player" class="fighter">
+           🥊 Player
+       </div>
+       
+       <div id="opponent-stats" class="stats-box">
+           OPPONENT Lv.15
+           <div class="hp-bar">
+               <div class="hp-remaining" id="opponent-hp"></div>
+           </div>
+           HP: <span id="opponent-hp-text">100/100</span>
+       </div>
+        <div id="player-stats" class="stats-box">
+           PLAYER Lv.15
+           <div class="hp-bar">
+               <div class="hp-remaining" id="player-hp"></div>
+           </div>
+           HP: <span id="player-hp-text">100/100</span>
+       </div>
+        <div class="menu-box">
+           <div class="menu-item" onclick="fight()">FIGHT</div>
+           <div class="menu-item" onclick="useItem()">ITEM</div>
+           <div class="menu-item" onclick="cry()">CRY</div>
+           <div class="menu-item" onclick="scream()">SCREAM</div>
+       </div>
+   </div>
+    <script>
+       let playerHealth = 100;
+       let opponentHealth = 100;
+       let isPlayerTurn = true;
+       
+       const bullyResponses = [
+           "Haha! Is that all you got? My grandma screams louder!",
+           "LOL! You call that a scream? Sounds like a squeaky toy!",
+           "*wheeze* Thanks for the entertainment, weakling!",
+           "Keep screaming, maybe someone will care! (Spoiler: They won't)",
+           "Aww, did someone miss their nap time?"
+       ];
+
+       const bullyTaunts = [
+           "*throws pocket sand* Sha-sha-sha!",
+           "*rips a massive fart in your direction* Oops, my bad!",
+           "*flicks a booger at you* Here, catch!",
+           "*makes chicken noises* Bawk bawk bawk!",
+           "*does a fortnite dance* Get rekt noob!"
+       ];
+
+       function updateHealth() {
+           document.getElementById('player-hp').style.width = playerHealth + '%';
+           document.getElementById('opponent-hp').style.width = opponentHealth + '%';
+           document.getElementById('player-hp-text').textContent = `${playerHealth}/100`;
+           document.getElementById('opponent-hp-text').textContent = `${opponentHealth}/100`;
+       }
+
+       function opponentTurn() {
+           isPlayerTurn = false;
+           setTimeout(() => {
+               const action = Math.random() > 0.3 ? 'fight' : 'heal';
+               
+               if (action === 'fight') {
+                   const damage = Math.floor(Math.random() * 15) + 5;
+                   playerHealth = Math.max(0, playerHealth - damage);
+                   alert(`Opponent throws a punch! You took ${damage} damage!`);
+               } else {
+                   const healing = 15;
+                   opponentHealth = Math.min(100, opponentHealth + healing);
+                   alert(`Opponent used their water bottle! Recovered ${healing} HP!`);
+               }
+               
+               updateHealth();
+               checkGameEnd();
+               isPlayerTurn = true;
+           }, 1000);
+       }
+
+       function fight() {
+           if (!isPlayerTurn) return;
+           
+           const damage = Math.floor(Math.random() * 20) + 10;
+           opponentHealth = Math.max(0, opponentHealth - damage);
+           alert(`You dealt ${damage} damage!`);
+           
+           updateHealth();
+           if (!checkGameEnd()) {
+               opponentTurn();
+           }
+       }
+
+       function useItem() {
+           if (!isPlayerTurn) return;
+           
+           const healing = 20;
+           playerHealth = Math.min(100, playerHealth + healing);
+           alert(`You used a healing item and recovered ${healing} HP!`);
+           
+           updateHealth();
+           opponentTurn();
+       }
+
+       function cry() {
+           if (!isPlayerTurn) return;
+           
+           const taunt = bullyTaunts[Math.floor(Math.random() * bullyTaunts.length)];
+           alert("You started crying!");
+           setTimeout(() => {
+               alert(`Opponent: ${taunt}`);
+               opponentTurn();
+           }, 1000);
+       }
+
+       function scream() {
+           if (!isPlayerTurn) return;
+           
+           const response = bullyResponses[Math.floor(Math.random() * bullyResponses.length)];
+           alert("You let out a mighty scream!");
+           setTimeout(() => {
+               alert(`Opponent: ${response}`);
+               alert("❤️‍🩹 Critical Emotional Damage! (but your HP remains the same)");
+               opponentTurn();
+           }, 1000);
+       }
+
+       function checkGameEnd() {
+           if (opponentHealth <= 0) {
+               alert("You won the match!");
+               resetGame();
+               return true;
+           } else if (playerHealth <= 0) {
+               alert("You lost the match!");
+               resetGame();
+               return true;
+           }
+           return false;
+       }
+
+       function resetGame() {
+           playerHealth = 100;
+           opponentHealth = 100;
+           isPlayerTurn = true;
+           updateHealth();
+       }
+   </script>
+</html>
