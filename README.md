@@ -1,3 +1,4 @@
-# silly game
+# silly web games
 
 https://bwithe.github.io/fistfight.html
+
